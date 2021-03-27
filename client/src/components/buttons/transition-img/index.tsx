@@ -17,11 +17,11 @@ function transitionImg(props: TransitionImgPropType) {
     />
   </Link>);
 
-  const imgWithoutLink = (<img
+  const imgWithoutLink = (<a className="view overlay zoom rounded" href="#"><img
     className="card-img-top image-rules img-fluid"
     src={props.productImage}
     alt={`product ${props.id}`}
-  />);
+  /></a>);
   return (
     <>
       <div className="card-wrapper inline-block">
