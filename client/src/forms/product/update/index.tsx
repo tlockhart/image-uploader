@@ -31,7 +31,7 @@ let ProductUpdateForm = (props: UpdateFormPropType) => {
                                     className={"form-control"}
                                     id={"formGroupValue"}
                                     placeholder={props.placeholderValue}
-                                    name={""}
+                                    name={"productValue"}
                                     label={"Price"}
                                     value={props.productValue}
                                     changeHandler={props.changeHandler}
