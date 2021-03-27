@@ -1,0 +1,19 @@
+.image-rules {
+    cursor: pointer;
+    /* border-radius: 8px; */
+    display: inline!important;
+    /* margin: 0!important; */
+    height: 225px!important;
+    width: auto;
+  }
+  
+  /* .card-border {
+    border: solid black 1px !important;
+    height: 100%;
+    width: auto;
+  } */
+  
+  .inline-block {
+    display: inline-block;
+    margin: 10px;
+  }

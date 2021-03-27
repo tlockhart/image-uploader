@@ -1,0 +1,47 @@
+ul {
+    list-style-type: none;
+}
+
+ol {
+    list-style-type: none;
+}
+
+.name-container-border {
+    /* border: 1px solid red; */
+}
+
+.input-border {
+    /* border: 1px solid blue; */
+}
+
+.file-label-border {
+    /* border: 1px solid orange; */
+  
+}
+
+.uploader-border {
+    /* border: 1px solid purple; */
+}
+
+div .img-select-btn{
+    position: absolute !important;
+    top: auto !important;
+    bottom: -1rem !important;
+    width: 100%;
+    /* border: 1px solid teal; */
+}
+
+#file-msg {
+    text-align: center;
+    height: 100%;
+}
+
+div .preview { 
+        text-align: center !important;
+}
+
+canvas { 
+	position: relative; 
+	display: block; 
+	margin: auto; 
+} 
