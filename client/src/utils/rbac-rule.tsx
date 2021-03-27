@@ -2,7 +2,7 @@ const rules = {
     visitor: {
       static: [
         "products:hide",
-        "products:view",
+        // "products:view",
         "home-page:visit"
         ]
     },

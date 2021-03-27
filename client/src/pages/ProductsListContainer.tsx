@@ -112,6 +112,7 @@ class ProductsListContainer extends Component<ProductsPropType>{
                     name={product.name}
                     value={product.value}
                     productImage={product.productImage}
+                    loggedOut={this.props.loggedOut}
                 />
             )
         });

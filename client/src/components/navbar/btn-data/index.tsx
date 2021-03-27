@@ -12,7 +12,8 @@ export function navbarOptions(props: NavbarOptionsPropType): NavbarType {
       name: 'products',
       label: 'Products',
       route: '/products',
-      authorization: 'products:view',
+      // authorization: 'products:view',
+      authorization: 'home-page:visit',
       key: 1
     }
   ];

@@ -10,12 +10,15 @@ let ProductListItem = (props) => {
   console.log("PRODUCTLISTITEM-USERRole:", userRole);
 
   const viewPath = "/products/product/";
+  let loggedOut = props.loggedOut;
+  console.log("User loggedOut:", loggedOut, " role:", userRole);
   return (
     <>
       <ProductImageViewBtn
         productImage={productImage}
         id={id}
         userRole={userRole}
+        loggedOut={loggedOut}
         value={value}
         name={name}
         viewPath={viewPath}

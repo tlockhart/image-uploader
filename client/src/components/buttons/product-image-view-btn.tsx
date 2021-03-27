@@ -16,6 +16,8 @@ let ProductImageViewBtn = (props: ProdImgViewItemProps) => {
       }
       productImage={props.productImage}
       id={props.id}
+      userRole={props.userRole}
+      loggedOut={props.loggedOut}
       />
   );
 };

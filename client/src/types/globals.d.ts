@@ -120,6 +120,8 @@ interface ActionBtnPropType {
     productImage: string;
     id: string;
     state?: any;
+    userRole: string;
+    loggedOut: boolean;
   }
   /**************************/
 
@@ -236,7 +238,6 @@ interface ActionBtnPropType {
     isUserAuthorized: true;
     loading: false;
     message: "";
-    role: string;
   }
 
   /***********************/
@@ -485,6 +486,7 @@ interface ActionBtnPropType {
     value: string;
     userRole: string;
     productImage: string;
+    loggedOut: boolean;
   }
 
   interface ProdUpdateItemProps {

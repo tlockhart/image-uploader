@@ -36,7 +36,7 @@ Unauthenticated users are given the visitor role by default.  In addition, newly
 ---
 ### **IMPORTANT LINKS**
 * [Link to github repository](https://github.com/tlockhart/image-uploader)
-* [Demo Version](https://salty-wave-96943.herokuapp.com/)
+* [Demo Version](https://shielded-bayou-40362.herokuapp.com/)
 * [OAuth](https://auth0.com/blog/5-steps-to-add-modern-authentication-to-legacy-apps-using-jwts/)
 * [RBACS](https://auth0.com/blog/role-based-access-control-rbac-and-react-apps/)
 * [MDBReact](https://mdbootstrap.com/docs/react/navigation/navbar/)

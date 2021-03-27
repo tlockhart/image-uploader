@@ -17,7 +17,7 @@ class ProductViewContainer extends Component<ProductViewPropType> {
     refreshURL = '/user/login/refresh';
 
     _productItemComponent!: JSX.Element;
-    state: ProductViewStateType
+    state: ProductViewStateType;
 
     deleteProduct: (url: string, productId: string, email: string, accessToken: string, refresh_token: string, expired: boolean, name?: null, value?: null, imageSrc?: null) => Promise<AxiosResponse<any> | undefined>;
 
@@ -43,7 +43,7 @@ class ProductViewContainer extends Component<ProductViewPropType> {
             isUserAuthorized: true,
             loading: false,
             message: '',
-            role: this.props.role,
+            // role: this.props.role,
         };
 
         this.deleteProduct = deleteProduct.bind(this);
@@ -207,12 +207,13 @@ class ProductViewContainer extends Component<ProductViewPropType> {
     }
 
     render() {
-        const role = this.state.role;
+        const role = this.props.role;
         const product = this.productItemComponent;
         const props = product?.props;
 
         const updatePath = "update/";
         let loggedOut = this.props.loggedOut;
+        console.log("User loggedOut:", loggedOut, " role:", role);
         return (
             <React.Fragment>
                 {product}
