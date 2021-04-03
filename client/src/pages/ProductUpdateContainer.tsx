@@ -96,39 +96,38 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
         this.setState({ hasAccessTokenExpired: false });
     }
 
+    /**
+     * Parse url and perform data fetch
+     * Set state variables for React
+     * Managed component
+     */
     async componentDidMount() {
         // Update navbar for address bar changes
         urlBtnUpdates();
 
         let url = window.location.pathname;
         let urlArray = url.split('/');
-        console.log("@@@URLARRAY:", urlArray);
         urlArray.splice(3, 1);
-        console.log("newArray:", urlArray);
         //replace space with app
         urlArray.splice(0, 1, '/api');
         // URL Syntax: /api/products/:id
         urlArray.splice(2, 1);
         const baseUrl = urlArray.join('/');
-        console.log("UPDATEBASEURL:", baseUrl);
+        // console.log("UPDATEBASEURL:", baseUrl);
         // make product request
         this.productItemComponent = await getProductDetails(baseUrl);
-        console.log("DIDMOUNT-productItemComponent:", this.productItemComponent);
-        // 03/21/2021:
-        /****************************************************** */
-        if (this.props.match.params.product_id && this.props.location.state) {
-            /******************************************
-             *  Get id off the URL Dynamic Segment
-             * ****************************************/
-            const { product_id } = this.props.match.params;
-            console.log("Product_ID:", product_id);
+        // object destructring
+       const {name, value, id} = this.productItemComponent.props;
+        /*******************************************************
+         Get data response from http request, after parsing URL
+        *******************************************************/
+            if (id && name && value) {   
 
-            /********************************************
+            /*******************************************
              * Pass item info from click button
-             * *****************************************/
-            const { name, value } = this.props.location.state;
+             ******************************************/
             this.setState({
-                productId: product_id,
+                productId: id,
                 placeholderName: name,
                 placeholderValue: `$ ${value}`,
             });
@@ -347,10 +346,12 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
                 <UpdateForm
                     changeHandler={this.changeHandler}
                     updateClickHandler={this.updateClickHandler}
-                    productName={""}
-                    productValue={""}
-                    placeholderName={props?.name}
-                    placeholderValue={props?.value}
+                    productName={this.state.productName}
+                    productValue={this.state.productValue}
+                    // placeholderName={props?.name}
+                    // placeholderValue={props?.value}
+                    placeholderName={this.state.placeholderName}
+                    placeholderValue={this.state.placeholderValue}
                     message={this.state.message}
                 />
             </React.Fragment>
