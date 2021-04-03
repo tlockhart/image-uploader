@@ -348,8 +348,6 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
                     updateClickHandler={this.updateClickHandler}
                     productName={this.state.productName}
                     productValue={this.state.productValue}
-                    // placeholderName={props?.name}
-                    // placeholderValue={props?.value}
                     placeholderName={this.state.placeholderName}
                     placeholderValue={this.state.placeholderValue}
                     message={this.state.message}
