@@ -282,14 +282,14 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
                         /********************************************/
                     }
                     else {
-                        console.log("I NEVER MADE IT TO IF");
+                        // console.log("I NEVER MADE IT TO IF");
                     }
                 }
                 catch (err) {
                     // Clear all localStorage, due to invalid Refresh token
                     console.log("ERRORED OUT IN UPDATE CATCH");
                     if (err.response.status === 401) {
-                        console.log('401 status received in ProductUpdate');
+                        console.log('401 Unauthorized user');
                         /***********************************************
                          * Reset Local Storage Variables
                          ************************************************/
@@ -303,7 +303,9 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
                         console.log('error status code', err.response.status);
                         this.setState({ isUserAuthorized: false });
                         console.log("isUserAuthorised = ", this.state.isUserAuthorized);
-                        this.setState({ message: err.response.data.message });
+                        // this.setState({ message: err.response.data.message });
+                        this.setState({ message: "401 Unauthorized user" });
+
                     } // if
                 } // catch
             }
@@ -336,11 +338,6 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
     }
 
     render() {
-        /***********************************************/
-        // let { id, name, value, userRole } = this.props.location.state;
-        const props = this.productItemComponent?.props;
-        console.log('props:', props);
-        /***********************************************/
         return (
             <React.Fragment>
                 <UpdateForm
