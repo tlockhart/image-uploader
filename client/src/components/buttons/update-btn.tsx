@@ -6,12 +6,7 @@ let UpdateBtn = (props: ProdUpdateItemProps) => {
         <ProductUpdateBtn 
           to={
             {
-              pathname: `${props.path}${props.id}`,
-              state: {
-                name: props.name,
-                value: props.value,
-                id: props.id,
-              }
+              pathname: `${props.path}${props.id}`          
             }
           }
           buttonName={props.btnName}/>

@@ -102,8 +102,6 @@ module.exports = async (req, res, next) => {
                 //01012020: Validate if refreshToken valid
                 this.isRefreshTokenValid(refresh_token_header, expired);
             }
-
-
         }
         else {
             console.log("check-auth: refresh_token: ELSE");
@@ -122,7 +120,7 @@ module.exports = async (req, res, next) => {
     }// catch
 };
 
-exports.isAccessTokenValid = (access_token_header, refresh_token_header) => {
+isAccessTokenValid = (access_token_header, refresh_token_header) => {
     console.log("check-auth: isAccessTokenValid");
     if (refresh_token_header === 'norefresh' && access_token_header) {
         console.log("check-auth: valid access_token_header refresh_token_header norefresh: ELSE IF2");
@@ -132,7 +130,7 @@ exports.isAccessTokenValid = (access_token_header, refresh_token_header) => {
     }
 };// isAccessTokenValid
 
-exports.isRefreshTokenValid = (refresh_token_header, expired) => {
+isRefreshTokenValid = (refresh_token_header, expired) => {
     decoded = oAuthAccessToken.verify(refresh_token_header, process.env.JWT_PRIVATE_KEY);
     console.log("CheckAuth: Refresh Token verified: IF: EXPIRED =", expired);
 };

@@ -115,20 +115,6 @@ class App extends Component {
     if (event.target.name === "Logout") {
       this.redirectHome();
     }
-    // console.log("HANDLEPAGECLICK: " + JSON.stringify(event.target.name));
-    // console.log("event.target.name:", event.target.name, " EventTarget:", event.target);
-    // const currentPage = this.state.currentPage;
-    // if(event.target.name === 'Login'){
-    //   console.log("currentpage:", "*"+currentPage+"*");
-    // }
-    // else if (event.target.name === "Products") {
-    //  console.log("currentpage:", "*"+currentPage+"*");
-    // }
-    // else if (event.target.name === "") {
-    //  console.log("currentpage:", "*"+currentPage+"*");
-    // else
-    //  console.log("currentpage:", "*"+currentPage+"*");
-    // }
   }
 
   componentDidUpdate() {

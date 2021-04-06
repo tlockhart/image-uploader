@@ -235,13 +235,15 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
             /************************************
              * STEP1: Get Data out of local Storage
              ************************************/
-            let { access_token, refresh_token, expiration, email } = await authenticationStore.getLocalStorage();
+            let { access_token, refresh_token, expiration, email, message } = await authenticationStore.getLocalStorage();
+
             /*************************************/
 
             /******************************************
              * STEP2: SET STATE VARIABLES With data returned from localStorage
              *******************************/
-            await this.setStateVariables(access_token, refresh_token, expiration, email, this.state.message);
+            await this.setStateVariables(access_token, refresh_token, expiration, email, message);
+
 
             console.log("HasAccessTokenExpired", this.state.hasAccessTokenExpired);
             /******************************************

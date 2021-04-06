@@ -100,9 +100,6 @@ interface ActionBtnPropType {
   interface TransitionBtnPropType {
     to: {
       pathname: string;
-      state: {
-        [key: string]: string;
-      };
     };
     buttonName: string;
   }
