@@ -8,8 +8,8 @@ import React from "react";
 * @param baseUrl 
 * @returns  
 */
-export let getProductDetails = async (baseUrl: string) => {
-    let allProducts = await API.getProduct(baseUrl);
+export let getProductDetails = async (baseUrl: string, authToken: string, refreshToken: string) => {
+    let allProducts = await API.getProduct(baseUrl, authToken, refreshToken);
     let productDetails = allProducts && { ...allProducts.data };
     console.log("@ProductDetails", productDetails)
     const productItemComponent = <ProductViewItem
@@ -115,8 +115,8 @@ export async function deleteProduct(
 * @param imageObj 
 * @returns  
 */
-export let insertCloudinary = async (baseURL: string, imageObj: string) => {
-    const cloudinaryResponse = await API.insertCloudinary(baseURL, imageObj);
+export let insertCloudinary = async (baseURL: string, imageObj: string, authToken: string, refreshToken: string) => {
+    const cloudinaryResponse = await API.insertCloudinary(baseURL, imageObj, authToken, refreshToken);
 
     return cloudinaryResponse;
 };
@@ -182,7 +182,7 @@ export let performDBAction = async (
     cb: Function) => {
 
     const uniqueProductError: string = "Request failed with status code 500";
-    const uniqueProductMsg = "Product name and value exists";
+    const uniqueProductMsg = "Product name exists";
 
     console.log("ProductStore: PerformDbAction:", "email:", email);
     console.log('ProductUpdateContainer:refresh_token = ', refreshToken);

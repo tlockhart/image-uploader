@@ -186,13 +186,15 @@ interface ActionBtnPropType {
   /**************************
    * ProductInsertContainer
    **************************/
-  interface ProductInserContainerPropType {
+  interface ProductInsertContainerPropType {
     location: {
       state: {
         name: string;
         value: string;
       };
     };
+    loggedOut: boolean;
+    role: string;
   }
   interface ProductInserContainerStateType {
     [signature: string]: any;
@@ -220,6 +222,9 @@ interface ActionBtnPropType {
     role: string;
     loggedOut: boolean;
     history: any;
+    areCredentialsValid: ()=>boolean;
+    credentialsActive: boolean;
+    setRole: (role: string, isLoggedOut: boolean)=>void;
   }
   interface ProductViewStateType {
     productsList: ProductDataType[];
@@ -300,6 +305,9 @@ interface ActionBtnPropType {
         product_id: string;
       };
     };
+    setRole: (role: string, loggedOut: boolean) => {};
+    loggedOut: boolean;
+    role: string;
   }
   interface ProductUpdateStateType {
     productItem: ProductViewItem,

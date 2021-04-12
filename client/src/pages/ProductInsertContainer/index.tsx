@@ -1,6 +1,7 @@
 import React, { Component, FormEvent } from "react";
 // Import module to get/set variables from/in the LocalStorage
-import * as authenticationStore from '../../utils/authenticationStore';
+import * as auth from '../../utils/authenticationStore';
+import Can from "components/can";
 
 // Import Components
 import ProductInsertForm from "../../forms/product/insert";
@@ -12,11 +13,11 @@ import { ChangeEvent } from "react";
 import { Moment } from "moment";
 import './styles.css';
 
-class ProductInsertContainer extends Component<ProductInserContainerPropType, ProductInserContainerStateType>  {
+class ProductInsertContainer extends Component<ProductInsertContainerPropType, ProductInserContainerStateType>  {
     cloudinaryURL = '/api/products/cloudinary/insert/';
     refreshURL = '/api/user/login/refresh';
     baseURL = '/api/products/product/insert/';
-    constructor(props: ProductInserContainerPropType) {
+    constructor(props: ProductInsertContainerPropType) {
         super(props);
         this.state = {
             productId: '',
@@ -95,7 +96,7 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
         // Get Reference to the canvas
         let previewCanvasElement = previewCanvasRef?.current;
         let inputElement = imageSelectRef?.current;
-        
+
         this.setImageProp("previewCanvasElement", previewCanvasElement);
         this.setImageProp("input", inputElement);
 
@@ -275,32 +276,45 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
                  * upload to Cloudinary
                  **************************/
                 console.log("Calling productStore.insertCloudinary");
-                let cloudinaryResult = await insertCloudinary(this.cloudinaryURL, base64StringImage);
 
-                // this.setState({cloudImageUrl: cloudinaryResult.url});
-                /**************************/
-                console.log("Converted Image: ", base64StringImage);
-                // copy image state to local variable
-                image = this.state.image;
-                //update cloudImageUrl
-                console.log("CLOUD URL:", cloudinaryResult?.data.url);
-                image.cloudImageUrl = cloudinaryResult?.data.url;
-                console.log("CLOUD IMAGEURL:", image.cloudImageUrl);
-                image.cloudImagePublicId = cloudinaryResult?.data.public_id;
+                const currentCredentials = await auth.getLocalStorage();
 
-                /****************************/
-                // Save image.cloudImagePublicId to db, where productImage == image.cloudImageURL
-                /****************************/
-                console.log("public_id", image.cloudImagePublicId);
-                /*************************** */
+                console.log("CurrentCredentials:", currentCredentials);
 
+                const authToken = 'Bearer '+currentCredentials.access_token;
 
-                // update base64Str
-                image.base64Str = base64StringImage;
-                // update image state variable
-                console.log("Image:", image);
-                this.setState({ image: image });
-                console.log("State image: ", this.state.image, "cloud image url", this.state.image.cloudImageUrl);
+                console.log("ProdInsertCont-AuthToken:", authToken);
+                const refreshToken = currentCredentials.refresh_token;
+
+                console.log("ProdInsertCont-RefreshToken:", refreshToken);
+
+                let cloudinaryResult = await insertCloudinary(this.cloudinaryURL, base64StringImage, authToken, refreshToken);
+                console.log("CloudinaryResult:", cloudinaryResult);
+                // If cloudinary insert successfull
+                if (cloudinaryResult) {
+                    // this.setState({cloudImageUrl: cloudinaryResult.url});
+                    /**************************/
+                    console.log("Converted Image: ", base64StringImage);
+                    // copy image state to local variable
+                    image = this.state.image;
+                    //update cloudImageUrl
+                    console.log("CLOUD URL:", cloudinaryResult?.data.url);
+                    image.cloudImageUrl = cloudinaryResult?.data.url;
+                    console.log("CLOUD IMAGEURL:", image.cloudImageUrl);
+                    image.cloudImagePublicId = cloudinaryResult?.data.public_id;
+
+                    /****************************/
+                    // Save image.cloudImagePublicId to db, where productImage == image.cloudImageURL
+                    /****************************/
+                    console.log("public_id", image.cloudImagePublicId);
+                    /*************************** */
+                    // update base64Str
+                    image.base64Str = base64StringImage;
+                    // update image state variable
+                    console.log("Image:", image);
+                    this.setState({ image: image });
+                    console.log("State image: ", this.state.image, "cloud image url", this.state.image.cloudImageUrl);
+                }// if cloudinary
             }// else
             // remove canvas after submit
             imgHelper.removeCanvas(previewCanvasElement);
@@ -309,7 +323,7 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
             /*****************************/
             // Reset image Name
             /*******************************/
-  
+
             await this.productImageClickHandler(event);
         } // if file selected
 
@@ -331,7 +345,7 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
 
         this.setState({ email });
 
-        let hasAccessTokenExpired = await authenticationStore.hasAccessTokenExpired();
+        let hasAccessTokenExpired = await auth.hasAccessTokenExpired();
 
         console.log("Expired?", hasAccessTokenExpired);
         this.setState({ hasAccessTokenExpired });
@@ -353,9 +367,9 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
     componentDidMount({ location } = this.props) {
         this.setElementRef();
         if (location.state) {
-            /********************************************
+            /******************************
              * Pass product info from click button
-             * *****************************************/
+             * *******************************/
             const { name, value } = location.state;
             var image = this.state.image;
             image.imageName = "Choose File";
@@ -382,7 +396,7 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
                     // and set the corresponding state property to the element's value
                     [name]: value,
                 }
-            ); 
+            );
         }
     } // changeHandler
 
@@ -405,7 +419,7 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
             /************************************
              * STEP1 of 8: Get Data out of local Storage
              ************************************/
-            let { access_token, refresh_token, expiration, email } = await authenticationStore.getLocalStorage();
+            let { access_token, refresh_token, expiration, email } = await auth.getLocalStorage();
             /*************************************/
 
             /******************************************
@@ -420,39 +434,46 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
             if (this.state.hasAccessTokenExpired) {
                 console.log("ProductInsertContainer refresh-token: ", this.state.refresh_token);
 
-                /***************************************
-                 * STEP4 of 8: RefreshTokens: If tokens have expired
-                 * **************************************/
+                /**********************************
+                 * STEP4 of 8: RefreshTokens: If 
+                 * tokens have expired
+                 * *********************************/
                 try {
-                    /*********************************
-                     * STEP5 of 8: Call credendentialStore to get refreshTokens and all other 
-                     * credentials from the API, AND SET LOCAL STORAGE WITH RESULTS
-                     *********************************/
-                    let newCredentials = await credentialStore.setLocalCredWNewTokens(this.state.refresh_token, this.refreshURL, this.state.authToken, this.state.email, this.state.hasAccessTokenExpired);
+                    /***************************
+                     * STEP5 of 8: Call 
+                     * credendentialStore to get 
+                     * new AccessTokens from the 
+                     * API, AND SET LOCAL STORAGE 
+                     * WITH RESULTS, if 
+                     * refreshTokens valid
+                     ****************************/
+                    let newUserCredentials = await credentialStore.setLocalCredWNewTokens(this.state.refresh_token, this.refreshURL, this.state.authToken, this.state.email, this.state.hasAccessTokenExpired);
                     /**************************/
-                    console.log("newCredentials STATUS", newCredentials);
-                    if (newCredentials) {
-                        console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED newCredentials:", newCredentials);
+                    console.log("newUserCredentials STATUS", newUserCredentials);
+                    if (newUserCredentials) {
+                        console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED newUserCredentials:", newUserCredentials);
 
-                        /*********************************************
-                         * STEP6 of 8: SET STATE VARIABLES RECEIVED FROM CREDENTIAL STORE
-                         ********************************************/
-                        let { access_token,
-                            refresh_token,
-                            expiration,
-                            email,
-                            message } = newCredentials;
+                        /*************************
+                         * STEP6 of 8: Evaluate 
+                         * localStorage 
+                         * credentials and set 
+                         * state variables with 
+                         * results
+                         ************************/
+                        // Get state credentials
+                        const evaluatedCredentials = credentialStore.getEvaluatedCredentials(await auth.getLocalStorage());
 
-                        // do something with response
-                        console.log("ProductionInsert:response returned", newCredentials);
-
-                        this.setStateVariables(access_token, refresh_token, expiration, email, message);
+                        // Set state credentials
+                        this.setState(evaluatedCredentials);
 
                         console.log("New AUTHTOKEN after Refresh:", this.state.authToken);
-                        /********************************************/
+                        /*********************/
                     }
+                    // AccessToken and RefreshToken expired
                     else {
                         console.log("I NEVER MADE IT TO IF");
+                        // this.props.setRole("visitor", true);
+                        // auth.resetLocalStorage();
                     }
                 }
                 catch (err) {
@@ -460,14 +481,16 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
                     console.log("ERRORED OUT IN Insert CATCH");
                     if (err.response.status === 401) {
                         console.log('401 status received in ProductInsert');
-                        /***********************************************
-                         * Reset Local Storage Variables
-                         ************************************************/
-                        await authenticationStore.resetLocalStorage();
+                        /**********************
+                         * Reset Local Storage 
+                         * Variables
+                         ***********************/
+                        await auth.resetLocalStorage();
 
-                        /*********************************************
-                         * SET STATE VARIABLES FROM Local Storage
-                         *********************************************/
+                        /******************
+                         * SET STATE VARIABLES 
+                         * FROM Local Storage
+                         ********************/
                         await this.resetStateVariables();
                         console.log('err', err.response);
                         console.log('error status code', err.response.status);
@@ -516,8 +539,9 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
         } // try
         catch (err) {
             console.log(err);
+            const displayMessage = err.message === 'Request failed with status code 401'? 'Please Login': '';
             this.setState({
-                message: err
+                message: displayMessage
             });
         }
     }
@@ -542,7 +566,7 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
             labelValue = labelElement?.textContent;
             imgInputInfo = element?.files[0];
         }
-        
+
         let image;
 
         // Upload Image has NO target, so set the labelValue to choose file
@@ -603,26 +627,38 @@ class ProductInsertContainer extends Component<ProductInserContainerPropType, Pr
         console.log("Message method called");
     }
     render() {
+        const role = this.props.role;
+        let loggedOut = this.props.loggedOut;
+        console.log("User loggedOut:", loggedOut, " role:", role);
         if (this.state.image) {
             return (
-
-                <React.Fragment>
-                    <ProductInsertForm
-                        changeHandler={this.changeHandler}
-                        insertClickHandler={this.insertClickHandler}
-                        productImageName={this.state.image.imageName}
-                        productName={this.state.productName}
-                        productValue={this.state.productValue}
-                        productImage={this.state.productImage}
-                        placeholderName={this.state.placeholderName}
-                        placeholderValue={this.state.placeholderValue}
-                        message={this.state.message}
-                        image={this.state.image}
-                        submitImageHandler={this.submitImageHandler}
-                        selectImage={this.selectImage}
-                        setImageProp={this.setImageProp}
-                    />
-                </React.Fragment>
+                <>
+                    {!loggedOut ? <Can
+                        role={role}
+                        perform="products:update"
+                        yes={
+                            () => (<>
+                                <ProductInsertForm
+                                    changeHandler={this.changeHandler}
+                                    insertClickHandler={this.insertClickHandler}
+                                    productImageName={this.state.image.imageName}
+                                    productName={this.state.productName}
+                                    productValue={this.state.productValue}
+                                    productImage={this.state.productImage}
+                                    placeholderName={this.state.placeholderName}
+                                    placeholderValue={this.state.placeholderValue}
+                                    message={this.state.message}
+                                    image={this.state.image}
+                                    submitImageHandler={this.submitImageHandler}
+                                    selectImage={this.selectImage}
+                                    setImageProp={this.setImageProp}
+                                />
+                            </>
+                            )
+                        }
+                        no={() => <></>}
+                    /> : ''}
+                </>
             )
         }
     }

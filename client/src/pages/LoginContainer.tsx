@@ -68,7 +68,7 @@ class LoginContainer extends Component<LoginPropType, LoginStateType> {
         // Package Data to be sent in the Post Request Body
         let data = {
             email: this.state.email,
-            password: this.state.password,
+            password: this.state.password
         };
         // Define Call to Server Side utils to post body to the backend server and set states, using login method:
         let login = (data: DataType) => {

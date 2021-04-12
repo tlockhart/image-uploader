@@ -25,6 +25,7 @@ import ProductViewContainer from "./pages/ProductViewContainer";
 import RegistrationContainer from "./pages/RegistrationContainer";
 import * as auth from "./utils/authenticationStore";
 import UploadSpinner from "./components/upload-spinner";
+import * as authenticationStore from "./utils/authenticationStore";
 
 class App extends Component {
   constructor() {
@@ -37,23 +38,35 @@ class App extends Component {
       loading: false,
       redirect: false,
       loggedOut: false,
+      credentialsValid: false
     };
 
     this.handlePageClick = this.handlePageClick.bind(this);
     this.redirectHome = this.redirectHome.bind(this);
     this.getRole = this.getRole.bind(this);
     this.setRole = this.setRole.bind(this);
+    this.areCredentialsValid = this.areCredentialsValid.bind(this);
   } //constructor
 
   componentDidMount() {
     this.getRole();
+    this.areCredentialsValid();
   }
+
   setRole(role, loggedOut) {
     this.setState({
       role: role,
       loggedOut: loggedOut,
     });
   }
+
+  async areCredentialsValid() {
+    const hasAccessTokenExpired = await authenticationStore.hasAccessTokenExpired();
+    const credentialsValid = !hasAccessTokenExpired;
+    this.setState({credentialsValid: credentialsValid});
+    return credentialsValid;
+  }
+
   // Taken from productionListContainer
   async getRole() {
     const localStateObj = await auth.getLocalStorage();
@@ -86,6 +99,7 @@ class App extends Component {
     return role;
     /***************************/
   }
+
   redirectHome() {
     //IMPORTANT: Redirect to the selected organization's page.
     console.log("Called REDIRECT HOME redirect b4", this.state.redirect);
@@ -167,12 +181,26 @@ class App extends Component {
           <Route
             exact
             path="/products/product/update/:product_id"
-            component={ProductUpdateContainer}
+            render={(props)=>(
+              <ProductUpdateContainer 
+              {...props}
+              role={this.state.role}
+              loggedOut={this.state.loggedOut}
+              setRole={this.setRole}
+            />
+          )}
           />
           <Route
             exact
             path="/product/insert"
-            component={ProductInsertContainer}
+            render={(props)=>(
+              <ProductInsertContainer 
+              {...props}
+              role={this.state.role}
+              loggedOut={this.state.loggedOut}
+              setRole={this.setRole}
+            />
+            )}
           />
           <Route
             exact
@@ -182,6 +210,9 @@ class App extends Component {
               {...props}
               role={this.state.role}
               loggedOut={this.state.loggedOut}
+              areCredentialsValid={this.areCredentialsValid}
+              credentialsActive={this.state.credentialsActive}
+              setRole={this.setRole}
               />
             )}
           />

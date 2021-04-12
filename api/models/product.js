@@ -6,8 +6,8 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false
         },
         value: {
-            type: DataTypes.FLOAT,
-            unique: true,
+            type: DataTypes.DECIMAL(10, 2),
+            unique: false,
             allowNull: false
         },
         productImage: {

@@ -1,7 +1,8 @@
 import React, { ChangeEvent, Component } from "react";
+import Can from "components/can";
 
 // Import module to get/set variables from/in the LocalStorage
-import * as authenticationStore from '../utils/authenticationStore';
+import * as auth from '../utils/authenticationStore';
 
 // Import Components
 import UpdateForm from "../forms/product/update";
@@ -77,7 +78,7 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
 
         this.setState({ email });
 
-        let hasAccessTokenExpired = await authenticationStore.hasAccessTokenExpired();
+        let hasAccessTokenExpired = await auth.hasAccessTokenExpired();
 
         console.log("Expired?", hasAccessTokenExpired);
         this.setState({ hasAccessTokenExpired });
@@ -114,25 +115,96 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
         urlArray.splice(2, 1);
         const baseUrl = urlArray.join('/');
         // console.log("UPDATEBASEURL:", baseUrl);
-        // make product request
-        this.productItemComponent = await getProductDetails(baseUrl);
-        // object destructring
-       const {name, value, id} = this.productItemComponent.props;
-        /*******************************************************
-         Get data response from http request, after parsing URL
-        *******************************************************/
-            if (id && name && value) {   
 
-            /*******************************************
-             * Pass item info from click button
-             ******************************************/
-            this.setState({
-                productId: id,
-                placeholderName: name,
-                placeholderValue: `$ ${value}`,
-            });
+        //4/5/2021
+        /*****************************************
+        * STEP2: Evaluate localStorage credentials * and set STATE VARIABLES with evaluated 
+        * credentials
+        *****************************************/
+        // Retrieve StateCredentials
+        const evaluatedCredentials = credentialStore.getEvaluatedCredentials(await auth.getLocalStorage());
+
+        // Set state credentials
+        this.setState(evaluatedCredentials);
+
+        console.log("AUTHTOKEN Set to LocalStorage:", this.state.authToken);
+        /*************************************/
+
+        console.log("hasAccessTokenExpired", this.state.hasAccessTokenExpired);
+        /***************************************
+         * STEP3: If accessToken expired, use 
+         * refreshToken to generate a new 
+         * accessToken. If refreshToken expired, 
+         * clear all tokens from localStorage
+         **************************************/
+        if (this.state.hasAccessTokenExpired) {
+            try {
+                /*********************************
+                 * Step4: Call credendentialStore 
+                 * to get new AccessTokens from 
+                 * the API, AND SET LOCAL STORAGE 
+                 * WITH RESULTS, if refreshTokens 
+                 * valid. Else set revoke credentials.
+                 *********************************/
+                let newUserCredentials = await credentialStore.setLocalCredWNewTokens(this.state.refresh_token, this.refreshURL, this.state.authToken, this.state.email, this.state.hasAccessTokenExpired);
+                /*********************************/
+
+                if (newUserCredentials) {
+                    console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED newUserCredentials:", newUserCredentials);
+                    /*********************************************
+                     * STEP5: Evaluate localStorage credentials and set state variables with results 
+                     ********************************************/   // Get state credentials
+                    const evaluatedCredentials = credentialStore.getEvaluatedCredentials(await auth.getLocalStorage());
+
+                    // Set state credentials
+                    this.setState(evaluatedCredentials);
+
+                    console.log("New AUTHTOKEN after Refresh:", this.state.authToken);
+                }
+                // AccessToken and RefreshToken expired
+                else {
+                    this.props.setRole("visitor", true);
+                    auth.resetLocalStorage();
+                }
+            }
+            catch (err) {
+                // Clear all localStorage, due to invalid Refresh token
+                console.log("err: ", err);
+                if (err.response.status === 401) {
+                    console.log('401 status received in ProductInsert');
+                    /**********************
+                     * Reset Local Storage 
+                     * Variables
+                     ***********************/
+                    await auth.resetLocalStorage();
+                }
+            }
+        } // if
+        /*************************************************/
+        console.log("ProductUpdateContainer AUTHORIZED?:", this.state.isUserAuthorized);
+        if (this.state.isUserAuthorized) {
+            // make product request like deleteProduct request
+            this.productItemComponent = await getProductDetails(baseUrl, this.state.authToken, this.state.refresh_token);
+            // object destructuring
+            const { name, value, id } = this.productItemComponent.props;
+            /*******************************************************
+             Get data response from http request, after parsing URL
+            *******************************************************/
+            if (id && name && value) {
+
+                /*******************************************
+                 * Pass item info from click button
+                 ******************************************/
+                this.setState({
+                    productId: id,
+                    placeholderName: name,
+                    placeholderValue: `$ ${value}`,
+                });
+            }
+            /***********************************************************/
         }
-        /***********************************************************/
+        /******************************/
+        //4/5/2021
     }
 
     changeHandler(event: ChangeEvent) {
@@ -235,7 +307,7 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
             /************************************
              * STEP1: Get Data out of local Storage
              ************************************/
-            let { access_token, refresh_token, expiration, email, message } = await authenticationStore.getLocalStorage();
+            let { access_token, refresh_token, expiration, email, message } = await auth.getLocalStorage();
 
             /*************************************/
 
@@ -253,38 +325,33 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
                 console.log("ProductUpdateContainer refresh-token: ", this.state.refresh_token);
 
                 /***************************************
-                 * STEP3: RefreshTokens: If tokens have expired
+                 * STEP3: Use RefreshTokens To Obtain new credentials, if Access Token has expired
                  * **************************************/
                 try {
                     /*********************************
-                     * STEP4: Call credendentialStore to get refreshTokens and all other 
-                     * credentials from the API, AND SET LOCAL STORAGE WITH RESULTS
+                     * STEP4: Call credendentialStore to Refresh All credentials and set local storage with results, if Refresh Token is valid. Else set revoke credentials."
                      *********************************/
                     let newUserCredentials = await credentialStore.setLocalCredWNewTokens(this.state.refresh_token, this.refreshURL, this.state.authToken, this.state.email, this.state.hasAccessTokenExpired);
                     /**************************/
-                    console.log("newUserCredentials STATUS", newUserCredentials);
                     if (newUserCredentials) {
-                        console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED newUserCredentials:", newUserCredentials);
+                        console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED From Refresh; newUserCredentials:", newUserCredentials);
 
                         /*********************************************
-                         * STEP5: SET STATE VARIABLES RECEIVED FROM CREDENTIAL STORE
+                         * STEP5: Evaluate localStorage credentials and set state variables with results 
                          ********************************************/
-                        let { access_token,
-                            refresh_token,
-                            expiration,
-                            email,
-                            message } = newUserCredentials;
+                        // Get state credentials
+                        const evaluatedCredentials = credentialStore.getEvaluatedCredentials(await auth.getLocalStorage());
 
-                        // do something with response
-                        console.log("ProductionUpdate:response returned", newUserCredentials);
-
-                        this.setStateVariables(access_token, refresh_token, expiration, email, message);
+                        // Set state credentials
+                        this.setState(evaluatedCredentials);
 
                         console.log("New AUTHTOKEN after Refresh:", this.state.authToken);
                         /********************************************/
                     }
+                    // AccessToken and RefreshToken expired
                     else {
-                        // console.log("I NEVER MADE IT TO IF");
+                        this.props.setRole("visitor", true);
+                        auth.resetLocalStorage();
                     }
                 }
                 catch (err) {
@@ -295,7 +362,7 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
                         /***********************************************
                          * Reset Local Storage Variables
                          ************************************************/
-                        await authenticationStore.resetLocalStorage();
+                        await auth.resetLocalStorage();
 
                         /*********************************************
                          * SET STATE VARIABLES FROM Local Storage
@@ -340,18 +407,32 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
     }
 
     render() {
+        const role = this.props.role;
+        // const updatePath = "update/";
+        let loggedOut = this.props.loggedOut;
+        console.log("User loggedOut:", loggedOut, " role:", role);
         return (
-            <React.Fragment>
-                <UpdateForm
-                    changeHandler={this.changeHandler}
-                    updateClickHandler={this.updateClickHandler}
-                    productName={this.state.productName}
-                    productValue={this.state.productValue}
-                    placeholderName={this.state.placeholderName}
-                    placeholderValue={this.state.placeholderValue}
-                    message={this.state.message}
-                />
-            </React.Fragment>
+            <>
+                {!loggedOut ? <Can
+                    role={role}
+                    perform="products:update"
+                    yes={
+                        () => (<>
+                            <UpdateForm
+                                changeHandler={this.changeHandler}
+                                updateClickHandler={this.updateClickHandler}
+                                productName={this.state.productName}
+                                productValue={this.state.productValue}
+                                placeholderName={this.state.placeholderName}
+                                placeholderValue={this.state.placeholderValue}
+                                message={this.state.message}
+                            />
+                        </>
+                        )
+                    }
+                    no={() => <></>}
+                /> : ''}
+            </>
         )
     }
 } // class

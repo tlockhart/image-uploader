@@ -88,23 +88,36 @@ class ProductViewContainer extends Component<ProductViewPropType> {
             /*************************************/
 
             console.log("hasAccessTokenExpired", this.state.hasAccessTokenExpired);
-            /**************************************************
-             * STEP3: If accessToken expired, use refreshToken to generate a new accessToken. If refreshToken expired, clear all tokens from localStorage
-             **************************************************/
+            /*************************************
+             * STEP3: If accessToken expired, use 
+             * refreshToken to generate a new 
+             * accessToken. If refreshToken 
+             * expired, clear all tokens from 
+             * localStorage
+             ************************************/
             if (this.state.hasAccessTokenExpired) {
                 try {
-                    /***********************************
-                     * Step4: Call credendentialStore to get new AccessTokens from the API, AND SET LOCAL STORAGE WITH RESULTS, if refreshTokens valid
-    
-                     ***********************************/
-                    let userCredentials = await credentialStore.setLocalCredWNewTokens(this.state.refresh_token, this.refreshURL, this.state.authToken, this.state.email, this.state.hasAccessTokenExpired);
+                    /*****************************
+                     * Step4: Call 
+                     * credendentialStore to get 
+                     * new AccessTokens from the 
+                     * API, AND SET LOCAL STORAGE 
+                     * WITH RESULTS, if 
+                     * refreshTokens valid
+                     **************************/
+                    let newUserCredentials = await credentialStore.setLocalCredWNewTokens(this.state.refresh_token, this.refreshURL, this.state.authToken, this.state.email, this.state.hasAccessTokenExpired);
                     /***********************************/
 
-                    if (userCredentials) {
-                        console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED userCredentials:", userCredentials);
-                        /*********************************************
-                         * STEP5: Evaluate localStorage credentials and set state variables with results 
-                         ********************************************/   // Get state credentials
+                    if (newUserCredentials) {
+                        console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED From Refresh;  newUserCredentials:", newUserCredentials);
+                        /***********************
+                         * STEP5: Evaluate 
+                         * localStorage 
+                         * credentials and set 
+                         * state variables with 
+                         * results 
+                         ***********************/
+                        // Get state credentials
                         const evaluatedCredentials = credentialStore.getEvaluatedCredentials(await auth.getLocalStorage());
 
                         // Set state credentials
@@ -112,13 +125,23 @@ class ProductViewContainer extends Component<ProductViewPropType> {
 
                         console.log("New AUTHTOKEN after Refresh:", this.state.authToken);
                     }
+                    // AccessToken and RefreshToken expired
                     else {
-                        console.log("I NEVER MADE IT TO IF");
+                        this.props.setRole("visitor", true);
+                        auth.resetLocalStorage();
                     }
                 }
                 catch (err) {
                     // Clear all localStorage, due to invalid Refresh token
                     console.log("err: ", err);
+                    if (err.response.status === 401) {
+                        console.log('401 status received in ProductInsert');
+                        /**********************
+                         * Reset Local Storage 
+                         * Variables
+                         ***********************/
+                        await auth.resetLocalStorage();
+                    }
                 }
             } // if
             /*************************************************/
@@ -172,20 +195,83 @@ class ProductViewContainer extends Component<ProductViewPropType> {
         let url = window.location.pathname;
         let urlArray = url.split('/');
         console.log("@@@URLARRAY:", urlArray);
-        // const id = urlArray[urlArray.length - 1];
-        // console.log("ID:", id);
         //replace space with app
         urlArray.splice(0, 1, '/api');
-        // remove product from url
         // URL Syntax: /api/products/:id
         urlArray.splice(2, 1);
-        // console.log("newURLElements:", urlArray);
         const baseUrl = urlArray.join('/');
-        // console.log("baseUrl:", baseUrl);
+        console.log("baseUrl:", baseUrl);
 
-        // make product request
-        this.productItemComponent = await getProductDetails(baseUrl);
+        //4/5/2021
+        /************************************/
+        /******************************************
+             * STEP2: Evaluate localStorage credentials and set STATE VARIABLES with evaluated credentials
+             *******************************/
+        // Retrieve StateCredentials
+        const evaluatedCredentials = credentialStore.getEvaluatedCredentials(await auth.getLocalStorage());
+
+        // Set state credentials
+        this.setState(evaluatedCredentials);
+
+        console.log("ProductViewContainer-AUTHTOKEN Set to LocalStorage:", this.state.authToken);
+        /*************************************/
+
+        console.log("ProductViewContainer- hasAccessTokenExpired:", this.state.hasAccessTokenExpired);
+        /**************************************************
+         * STEP3: If accessToken expired, use refreshToken to generate a new accessToken. If refreshToken expired, clear all tokens from localStorage
+         **************************************************/
+        if (this.state.hasAccessTokenExpired) {
+            try {
+                /***********************************
+                 * STEP4: Call credendentialStore to Refresh All credentials and set local storage with results, if Refresh Token is valid. Else set revoke credentials.
+                 ***********************************/
+                let userCredentials = await credentialStore.setLocalCredWNewTokens(this.state.refresh_token, this.refreshURL, this.state.authToken, this.state.email, this.state.hasAccessTokenExpired);
+                /***********************************/
+
+                if (userCredentials) {
+                    console.log("NEW ACCESS TOKENS HAVE BEEN RECEIVED userCredentials:", userCredentials);
+                    /*********************************************
+                     * STEP5: Evaluate localStorage credentials and set state variables with results 
+                     ********************************************/   // Get state credentials
+                    const evaluatedCredentials = credentialStore.getEvaluatedCredentials(await auth.getLocalStorage());
+
+                    // Set state credentials
+                    this.setState(evaluatedCredentials);
+
+                    console.log("New AUTHTOKEN after Refresh:", this.state.authToken);
+                }
+                // AccessToken and RefreshToken expired
+                else {
+                    this.props.setRole("visitor", true);
+                    auth.resetLocalStorage();
+                }
+            }
+            catch (err) {
+                // Clear all localStorage, due to invalid Refresh token
+                console.log("err: ", err);
+            }
+        } // if
+        /*************************************************/
+        console.log("ProductViewContainer AUTHORIZED?:", this.state.isUserAuthorized);
+        if (this.state.isUserAuthorized) {
+            /*******************************
+             *STEP 6: PERFORM A DB ACTION IF TOKENS R VALID
+            ********************************/
+            //4/5/2021
+            console.log("EMAIL IN STAGEDBACTION:", this.state.email);
+            // make product request and set productItemComponent
+            this.productItemComponent = await getProductDetails(baseUrl, this.state.authToken, this.state.refresh_token);
+            console.log("PRODUCTVIEWCONTAINER-Product:", this.productItemComponent);
+        }
+        /************************************/
+
+
+
         console.log("ViewContainer Props2:", this.props.role);
+
+        // check if user Credentials Active:
+        this.props.areCredentialsValid();
+        console.log("USER ACTIVE:", this.props.credentialsActive);
     }// ComponentDidMount
 
     /**
@@ -216,26 +302,34 @@ class ProductViewContainer extends Component<ProductViewPropType> {
         console.log("User loggedOut:", loggedOut, " role:", role);
         return (
             <React.Fragment>
-                {product}
+                {!loggedOut ? <Can
+                    role={role}
+                    perform="products:view"
+                    yes={
+                        () => (
+                            <>{product}</>
+                        )}
+                    no={() => <></>}
+                /> : ''}
                 <div className="text-center">
-                    {!loggedOut?<Can
+                    {!loggedOut ? <Can
                         role={role}
                         perform="products:update"
                         yes={
                             () => (
-                            <>
-                                <UpdateBtn
-                                    id={props?.id}
-                                    name={"Update"}
-                                    value={props?.value}
-                                    path={updatePath}
-                                    btnName={"Update"}
-                                />
-                            </>
-                        )}
+                                <>
+                                    <UpdateBtn
+                                        id={props?.id}
+                                        name={"Update"}
+                                        value={props?.value}
+                                        path={updatePath}
+                                        btnName={"Update"}
+                                    />
+                                </>
+                            )}
                         no={() => <></>}
-                    />:''}
-                    {!loggedOut?<Can
+                    /> : ''}
+                    {!loggedOut ? <Can
                         role={role}
                         perform="products:delete"
                         yes={() => (
@@ -248,7 +342,7 @@ class ProductViewContainer extends Component<ProductViewPropType> {
                             </>
                         )}
                         no={() => <></>}
-                    />:''}
+                    /> : ''}
                 </div>
             </React.Fragment>
         )

@@ -12,10 +12,12 @@ const checkAuth = require('../authenticators/check-auth');
 // Import ProductsController
 const ProductsController = require('../controllers/products');
 
-
-// Handle incoming requests from '/products':
-// Second argument is a hand/er function
-// localhost:3000/products/
+/*************************************************
+ * products': Second argument is a handler function
+ * Display URL: localhost:3000/products/
+ * API URL: 'api/products/'
+ * Access: Visitor/User/Admin - No Check Auth req
+ *************************************************/
 router.get('/', ProductsController.products_get_all);
 
 // Post request body:
@@ -25,20 +27,28 @@ router.get('/', ProductsController.products_get_all);
 //  "productImage": tlockhart.png
 // }
 
-// 12/22: INSERT
-/**********/
-router.post('/product/insert/', checkAuth,ProductsController.products_insert_product);
+/***********************************
+ * Purpose: Insert a new Product
+ * API URL: 'api/products/product/insert/'
+ * Access: User/Admin - Check Auth req
+ ***********************************/
+router.post('/product/insert/', checkAuth, ProductsController.products_insert_product);
 
+/*******************************
+ * Purpose: Insert an image to cloudinary
+ * API URL: 'api/products/cloudinary/insert/'
+ * Access: Admin - Check Auth req
+ *******************************/
+router.post('/cloudinary/insert/', checkAuth, ProductsController.cb_image_upload);
 
-// 5/17/2020
-// URL: '/products/cloudinary/insert/'
-/*******************/
-// router.post('/cloudinary/insert/', checkAuth,ProductsController.cb_image_upload);
-router.post('/cloudinary/insert/',ProductsController.cb_image_upload);
-
-// localhost:3000/products/5d75802fa50af037b063668d
-router.get('/:productId',ProductsController.products_get_product);
-// 1/18/2010:router.get('/:productId',checkAuth, ProductsController.products_get_product);
+/******************************
+ * Purpose: Get a product
+ * Display URL: localhost:3000/products/
+ * :productId
+ * API URL: 'api/products/:productId'
+ * Access: User/Admin - Check Auth req
+ *******************************/
+router.get('/:productId',checkAuth, ProductsController.products_get_product);
 
 // change data in the database (update)
 // Patch Request Body: 
@@ -52,12 +62,22 @@ router.get('/:productId',ProductsController.products_get_product);
 // 		"value": "10"
 // 	}
 // ]
-// localhost:3000/products/5d75802fa50af037b063668d
-// NOTE: Authorization add 
+/*******************************************
+ * Purpose: Update existing product
+ * Display URL: localhost:3000/products/
+ * :productId
+ * API URL: 'api/products/product/update/:productId
+ * Access: Admin - Check Auth req
+ *********************************************/
 router.patch('/product/update/:productId', checkAuth, ProductsController.products_update_product);
 
-// localhost:3000/products/delte/5d75802fa50af037b063668d
-// NOTE: Authorization added
+/*********************************
+ * Purpose: Delete a product
+ * Display URL: localhost:3000/products/delete/
+ * :productId
+ * API URL: 'api/products/delete/:productId
+ * Access: Admin - Check Auth req
+ **********************************/
 router.delete('/product/delete/:productId', checkAuth, ProductsController.products_delete_product);
 
 module.exports = router;

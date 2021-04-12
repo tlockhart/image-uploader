@@ -22,7 +22,6 @@ let ProductListItem = (props) => {
         value={value}
         name={name}
         viewPath={viewPath}
-        viewBtnClickHandler={(event) => props.filterClickHandler(event)}
       />
     </>
   );

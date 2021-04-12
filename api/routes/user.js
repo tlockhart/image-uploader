@@ -8,22 +8,39 @@ const UserController = require('../controllers/user');
 //Import check Auth MiddleWare
 const checkAuth = require('../authenticators/check-auth');
 
-// localhost:3000/user/informatin/:userEmail
-router.get('/information/:userEmail', UserController.users_get_user); // post
+/****************************************
+ * Purpose: Get user login info and role
+ * API URL: '/user/information/:userEmail'
+ * Access: Admin - Requires Check Auth
+ * **************************************/
+router.get('/information/:userEmail', UserController.users_get_user); 
 
-// localhost:3000/user/register
+/********************************
+ * Purpose: Register user new user
+ * API URL: '/user/register'
+ * Access: All - No Check Auth req
+ ********************************/
 router.post('/register', UserController.user_register); // post
 
-// localhost:3000//user/login/refresh
+/**********************************
+ * Purpose: Refresh a users cred
+ * API URL: '/user/login/refresh'
+ * Access: User/Admin - Check Auth req
+ **********************************/
 router.post('/login/refresh', checkAuth, UserController.user_refreshTokens);
 
-// create a token
-// localhost:3000/user/login
+/*******************************
+ * Purpose: User login, create token
+ * API URL: '/user/login'
+ * Access: All - No Check Auth req
+ * ******************************/
 router.post('/login', UserController.user_login);
 
-// localhost:3000/user/5d75802fa50af037b063668d
+/********************************
+ * Purpose: Delete a product
+ * API URL: 'localhost:3000'/user/:productId'
+ * Access: Admin - Check Auth req
+ * *******************************/
 router.delete('/:userId', checkAuth, UserController.user_delete); // delete
-
- 
 
 module.exports = router;

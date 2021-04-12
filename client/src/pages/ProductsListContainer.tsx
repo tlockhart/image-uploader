@@ -151,7 +151,7 @@ class ProductsListContainer extends Component<ProductsPropType>{
      * @returns  
      */
     render() {
-        /* 5/23/2020: In order to stop the component from
+        /* In order to stop the component from
             rendering before the user's role has been loaded
             a loading state property was added.  When the loading state changes, the page will be rerendered with the correct usr role. */
         if (this.state.loading === true) {

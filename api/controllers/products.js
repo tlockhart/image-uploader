@@ -1,7 +1,4 @@
-// const mongoose = require('mongoose');
 
-// // import models
-// const Product = require('../models/product');
 
 // import models
 var db = require("../models");
@@ -264,7 +261,7 @@ exports.products_delete_product = async (req, res, next) => {
 
         if (cloudResult.cloudId) {
             try {
-                cloudImageDestroyed = await cloudinary.uploader.destroy(cloudResult.cloudId);
+                let cloudImageDestroyed = await cloudinary.uploader.destroy(cloudResult.cloudId);
                 console.log("CLOUDDESTROYED", cloudImageDestroyed);
                 // res.status(200).json(cloudId);
                 /********************************** */
