@@ -12,7 +12,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         productImage: {
             type: DataTypes.STRING,
-            unique: true,
+            unique: false,
             allowNull: false
         },
         cloudId: {
