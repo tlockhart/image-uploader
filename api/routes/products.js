@@ -59,7 +59,6 @@ router.post('/cloudinary/insert/', checkAuth, ProductsController.cb_image_upload
  *******************************/
 router.get('/product/:productId',checkAuth, ProductsController.products_get_product);
 
-
 /*********************************
  * Purpose: Delete a product
  * API URL: 'api/products/product/delete/:productId
