@@ -111,8 +111,9 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
         urlArray.splice(3, 1);
         //replace space with app
         urlArray.splice(0, 1, '/api');
-        // URL Syntax: /api/products/:id
-        urlArray.splice(2, 1);
+        // Get Product PlaceHolder text
+        // API Syntax: /api/products/product/:id
+        // urlArray.splice(2, 1);
         const baseUrl = urlArray.join('/');
         // console.log("UPDATEBASEURL:", baseUrl);
 

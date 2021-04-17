@@ -41,41 +41,28 @@ router.post('/product/insert/', checkAuth, ProductsController.products_insert_pr
  *******************************/
 router.post('/cloudinary/insert/', checkAuth, ProductsController.cb_image_upload);
 
-/******************************
- * Purpose: Get a product
- * Display URL: localhost:3000/products/
- * :productId
- * API URL: 'api/products/:productId'
- * Access: User/Admin - Check Auth req
- *******************************/
-router.get('/:productId',checkAuth, ProductsController.products_get_product);
-
-// change data in the database (update)
-// Patch Request Body: 
-// [
-// 	{
-// 		"propName": "name",
-// 		"value": "Harry Potter 7"
-// 	},
-// 	{
-// 		"propName": "value",
-// 		"value": "10"
-// 	}
-// ]
 /*******************************************
  * Purpose: Update existing product
- * Display URL: localhost:3000/products/
+ * Display URL: localhost:3000/products/product/update
  * :productId
  * API URL: 'api/products/product/update/:productId
  * Access: Admin - Check Auth req
  *********************************************/
-router.patch('/product/update/:productId', checkAuth, ProductsController.products_update_product);
+ router.patch('/product/update/:productId', checkAuth, ProductsController.products_update_product);
+
+/******************************
+ * Purpose: Get a product
+ * Display URL: localhost:3000/products/
+ * :productId
+ * API URL: 'api/products/product/:productId'
+ * Access: User/Admin - Check Auth req
+ *******************************/
+router.get('/product/:productId',checkAuth, ProductsController.products_get_product);
+
 
 /*********************************
  * Purpose: Delete a product
- * Display URL: localhost:3000/products/delete/
- * :productId
- * API URL: 'api/products/delete/:productId
+ * API URL: 'api/products/product/delete/:productId
  * Access: Admin - Check Auth req
  **********************************/
 router.delete('/product/delete/:productId', checkAuth, ProductsController.products_delete_product);

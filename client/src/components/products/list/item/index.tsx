@@ -8,9 +8,7 @@ let ProductItem = (props: ProductItemPropType) => {
   let value = props.value;
   let valueText = `Price: $${value}`;
   let id = props.id;
-  // let regex = /['"']+/g;
   let image: string = props.image;
-  // .replace(regex, '');
   console.log('in productLIst:', props);
 
   return (

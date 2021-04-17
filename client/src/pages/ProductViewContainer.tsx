@@ -193,12 +193,13 @@ class ProductViewContainer extends Component<ProductViewPropType> {
         urlBtnUpdates();
 
         let url = window.location.pathname;
+        console.log(`URL: ${url}`);
         let urlArray = url.split('/');
         console.log("@@@URLARRAY:", urlArray);
         //replace space with app
         urlArray.splice(0, 1, '/api');
-        // URL Syntax: /api/products/:id
-        urlArray.splice(2, 1);
+        // construct api URL Syntax: /api/products/product/:id
+        // urlArray.splice(2, 1);
         const baseUrl = urlArray.join('/');
         console.log("baseUrl:", baseUrl);
 

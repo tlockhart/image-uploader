@@ -9,8 +9,8 @@ import React from "react";
 * @returns  
 */
 export let getProductDetails = async (baseUrl: string, authToken: string, refreshToken: string) => {
-    let allProducts = await API.getProduct(baseUrl, authToken, refreshToken);
-    let productDetails = allProducts && { ...allProducts.data };
+    let product = await API.getProduct(baseUrl, authToken, refreshToken);
+    let productDetails = product && { ...product.data };
     console.log("@ProductDetails", productDetails)
     const productItemComponent = <ProductViewItem
         image={productDetails.productImage}
