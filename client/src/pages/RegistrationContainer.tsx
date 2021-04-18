@@ -1,5 +1,10 @@
 import React, { Component } from "react";
-import {ChangeEvent} from "react";
+import { ChangeEvent } from "react";
+
+import {formCorrection, checkFormErrors} from "js/form-correction";
+
+import { urlBtnUpdates } from "utils/urlBtnUpdates";
+
 // import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBMask, MDBView } from "mdbreact";
 
 // Import Server-Side Utilities:
@@ -25,15 +30,30 @@ class RegistrationContainer extends Component<RegContainerPropType> {
         this.changeHandler = this.changeHandler.bind(this);
         this.clickHandler = this.clickHandler.bind(this);
     } // constructor
- 
+
+    async componentDidMount() {
+        // Update navbar for address bar changes
+        urlBtnUpdates();
+    }
+
     /**
-     * Changes handler - Sets state on all input values
+     * Changes handler - Sets state on all input values, when textfield changes
      * @param event 
      */
     changeHandler(event: ChangeEvent<HTMLInputElement>) {
         // First disable default behavior
         event.preventDefault();
 
+        const target = event.target;
+        const targetId = target.id;
+
+        // Set a listener on the textField to correct invalid ids
+        if (targetId === "regFormGroupEmail") {
+            formCorrection("regFormGroupEmail");
+        }
+        if (target.style.borderColor === "red" && target.value){
+            target.style.borderColor = "";
+        }
         const {
             name,
             value
@@ -53,41 +73,49 @@ class RegistrationContainer extends Component<RegContainerPropType> {
 
     clickHandler(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
+
         console.log(`User Name: ${this.state.email}, Password: ${this.state.password}`);
 
-        // Package Data to be sent in the Post Request Body
+        // Correct email format prior to submission
+        if (!this.state.email || !this.state.password) {
+            checkFormErrors("regFormGroupEmail", "regFormGroupPassword")
+        } else {
+            // Package Data to be sent in the Post Request Body
         let regData = {
             email: this.state.email,
             password: this.state.password
         };
 
-        // Define Call to Server Side utils to post body to the backend server and set states, using register method:
-        let register = (regData: RegDataType) => {
-            console.log('IN REGISTER CALL');
-            API.register(regData)
-                .then(regResponse => {
-                    console.log("regResponse:", regResponse);
-                      this.setState( { message: regResponse.data.message}); 
-                })
-                .catch(err => {
-                    console.log("ERROR:", err, "Message:", err.message);
-                    if (err.message === this.state.existingUserError){
-                        this.setState({ message: this.state.existingUserMsg});
-                    } 
-                    else {
-                        this.setState({ message: err.message});
-                    }
-                });
-        };
+            // Define Call to Server Side utils to post body to the backend server and set states, using register method:
+            let register = (regData: RegDataType) => {
+                console.log('IN REGISTER CALL');
+                API.register(regData)
+                    .then(regResponse => {
+                        console.log("regResponse:", regResponse);
+                        this.setState({ message: regResponse.data.message });
+                        //redirect to login after new registration created
+                        this.props.redirectLogin();
+                    })
+                    .catch(err => {
+                        console.log("ERROR:", err, "Message:", err.message);
+                        if (err.message === this.state.existingUserError) {
+                            this.setState({ message: this.state.existingUserMsg });
+                        }
+                        else {
+                            this.setState({ message: err.message });
+                        }
+                    });
+            };
 
-        // Execute register
-        register(regData);
+            // Execute register
+            register(regData);
 
-        // Reset state variables after submit
-        this.setState({
-            email: '',
-            password: ''
-        });
+            // Reset state variables after submit
+            this.setState({
+                email: '',
+                password: ''
+            });
+        } //else
     } // clickHandler
 
     render() {
@@ -97,9 +125,10 @@ class RegistrationContainer extends Component<RegContainerPropType> {
                     changeHandler={this.changeHandler}
                     clickHandler={this.clickHandler}
                     email={this.state.email}
-                    password={this.state.password} 
-                    message={this.state.message}/>
-            </React.Fragment>
+                    password={this.state.password}
+                    message={this.state.message}
+                />
+            </React.Fragment >
         )
     }
 } // class

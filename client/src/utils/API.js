@@ -53,11 +53,6 @@ export default {
   getProduct: async (baseURL, authToken, refreshToken) => {
     if (baseURL) {
       try {
-        // const data = {
-        //   expired: expired,
-        //   email: email,
-        // };
-
         console.log("in API.getProduct", baseURL);
         console.log("authToken:", authToken);
         console.log("refreshToken", refreshToken);
@@ -66,7 +61,7 @@ export default {
             Authorization: authToken,
             "Content-Type": "application/json",
             refreshtoken: refreshToken,
-          }
+          },
         });
         /********************************************
          * Send the results back to calling program
@@ -74,20 +69,34 @@ export default {
         console.log("GET=", get);
         return get;
       } catch (err) {
-        console.log("User Unauthorized Error:", err);
+        console.log("Get Product Unauthorized Error:", err);
         return err;
       }
     }
   },
-  // 01/03/2020:
-  getUserInfo: async (baseURL, email) => {
-    if (email && baseURL) {
-      let response = await axios.get(baseURL, email);
-      console.log("APIGETUSERINFO: " + JSON.stringify(response));
-      return response;
-    } else {
-      console.log("API.email:", email);
-      console.log("API.baseURL:", baseURL);
+  getUserInfo: async (baseURL, authToken, refreshToken) => {
+    try {
+      // console.log("in API.getProduct", baseURL);
+      // console.log("authToken:", authToken);
+      // console.log("refreshToken", refreshToken);
+      if (baseURL) {
+        let response = await axios.get(baseURL, 
+          {
+            headers: {
+            Authorization: authToken,
+            "Content-Type": "application/json",
+            refreshtoken: refreshToken,
+            },
+          });
+
+        console.log("APIGETUSERINFO: " + JSON.stringify(response));
+        return response;
+      } else {
+        console.log("API.baseURL:", baseURL);
+      }
+    } catch (err) {
+      console.log("UserInfo Unauthorized Error:", err);
+      return err;
     }
   },
 

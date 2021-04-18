@@ -334,10 +334,15 @@ interface ActionBtnPropType {
     refresh_token?: string;
     isUserAuthorized?: boolean;
     hasAccessTokenExpired?: boolean;
+    productsList?: {
+      [key: string]: string;
+    }
   }
   /*************************************/
   /******RegistrationContainerPropType******/
-  interface RegContainerPropType {}
+  interface RegContainerPropType {
+    redirectLogin: ()=>void;
+  }
   interface RegContainerStateType {
     email: string;
     password: string;

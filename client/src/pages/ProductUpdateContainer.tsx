@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component } from "react";
+import { ChangeEvent, Component } from "react";
 import Can from "components/can";
 
 // Import module to get/set variables from/in the LocalStorage
@@ -11,6 +11,7 @@ import { updateProduct, performDBAction } from '../utils/productStore';
 import { Moment } from "moment";
 import { urlBtnUpdates } from "utils/urlBtnUpdates";
 import { getProductDetails } from '../utils/productStore';
+import ProductsListContainer from "./ProductsListContainer";
 
 class ProductUpdateContainer extends Component<ProductUpdatePropType> {
     refreshURL: string;
@@ -199,7 +200,7 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
                 this.setState({
                     productId: id,
                     placeholderName: name,
-                    placeholderValue: `$ ${value}`,
+                    placeholderValue: `$${value}`,
                 });
             }
             /***********************************************************/
@@ -300,10 +301,10 @@ class ProductUpdateContainer extends Component<ProductUpdatePropType> {
             /************************************************************************
              * Reset state variables representing view input after submit
              ************************************************************************/
-            this.setState({ productName: '' });
-            this.setState({ productValue: '' });
-            this.setState({ placeholderName: '' });
-            this.setState({ placeholderValue: '' });
+            // this.setState({ productName: '' });
+            // this.setState({ productValue: '' });
+            // this.setState({ placeholderName: '' });
+            // this.setState({ placeholderValue: '' });
 
             /************************************
              * STEP1: Get Data out of local Storage

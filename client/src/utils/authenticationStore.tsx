@@ -102,7 +102,7 @@ let resetLocalStorage = () => {
     localStorage.clear();
 };
 
-let setUserState = async (email: string) => {
+let setUserState = async (email: string, authToken: string, refreshToken: string) => {
     // set state variables:
     // let stateVariables = await getLocalStorage();
 
@@ -112,7 +112,7 @@ let setUserState = async (email: string) => {
     console.log("authenticationStore.setUserState: Email=*" + email + "*");
 
     // 01/03/2020: Get User role
-    let userRoleObj = await API.getUserInfo(baseURL, email)
+    let userRoleObj = await API.getUserInfo(baseURL, authToken, refreshToken)
         .then(userRecord => {
             console.log("BASE URL=", baseURL);
             console.log("USER userRecord=", userRecord);
@@ -139,17 +139,13 @@ let setUserState = async (email: string) => {
 };
 
 // get user role from backend
-var setUserRole = async (email: string) => {
-    // set state variables:
-    // let stateVariables = await getLocalStorage();
+var setUserRole = async (email: string, authToken: string, refreshToken: string) => {
 
-    // this.setState(stateVariables);
-    // let user;
     let baseURL = `/api/user/information/${email}`;
     // console.log("authenticationStore.setUserRole: Email=*" + email + "*");
 
-    // 01/03/2020: Get User role
-    let userRoleObj = await API.getUserInfo(baseURL, email)
+    // Get User role
+    let userRoleObj = await API.getUserInfo(baseURL, authToken, refreshToken)
         .then(userRecord => {
  
             // set user
@@ -171,7 +167,5 @@ var setUserRole = async (email: string) => {
         });
     return userRoleObj;
 }
-
-// import * as auth from './authenticationStore';
 
 export { set, get, hasAccessTokenExpired, setLocalStorage, getLocalStorage, resetLocalStorage, setUserState, setUserRole };

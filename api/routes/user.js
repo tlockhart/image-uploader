@@ -11,9 +11,9 @@ const checkAuth = require('../authenticators/check-auth');
 /****************************************
  * Purpose: Get user login info and role
  * API URL: '/api/user/information/:userEmail'
- * Access: Admin - Requires Check Auth
+ * Access: User/Admin - Requires Check Auth, because there is no reason to check a user role only user has a login
  * **************************************/
-router.get('/information/:userEmail', UserController.users_get_user); 
+router.get('/information/:userEmail', checkAuth, UserController.users_get_user); 
 
 /********************************
  * Purpose: Register user new user

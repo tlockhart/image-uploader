@@ -1,4 +1,3 @@
-import React from "react";
 import { MDBBtn, MDBContainer, MDBRow, MDBCol } from "mdbreact";
 import Text from "components/inputs/text";
 
@@ -15,9 +14,9 @@ let RegistrationForm = (props) => {
               <div className="form-group">
                 {/* email */}
                 <Text
-                  htmlFor={"formGroupEmail"}
+                  htmlFor={"regFormGroupEmail"}
                   className={"form-control"}
-                  id={"formGroupEmail"}
+                  id={"regFormGroupEmail"}
                   // placeholder={"email"}
                   name={"email"}
                   label={"Email"}
@@ -26,9 +25,9 @@ let RegistrationForm = (props) => {
                 />
                 {/* password */}
                 <Text
-                  htmlFor={"formGroupPassword"}
+                  htmlFor={"regFormGroupPassword"}
                   className={"form-control"}
-                  id={"formGroupPassword"}
+                  id={"regFormGroupPassword"}
                   // placeholder={"password"}
                   name={"password"}
                   label={"Password"}
@@ -39,13 +38,13 @@ let RegistrationForm = (props) => {
                 <MDBRow>
                   <MDBCol>
                     <label htmlFor="formGroupPassword" />
-                    <MDBBtn
-                      className={"mx-0"}
-                      color="blue-grey"
-                      onClick={props.clickHandler}
-                    >
-                      Submit
-                    </MDBBtn>
+                      <MDBBtn
+                        className={"mx-0"}
+                        color="blue-grey"
+                        onClick={props.clickHandler}
+                      >
+                        Submit
+                      </MDBBtn>
                     <h3 className="mt-5">
                       {props.message ? props.message : ""}
                     </h3>

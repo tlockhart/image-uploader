@@ -1,5 +1,7 @@
 import React, { Component, ChangeEvent, FormEvent } from "react";
 
+import { urlBtnUpdates } from "utils/urlBtnUpdates";
+
 // Import module to get/set variables from/in the LocalStorage
 import * as authenticationStore from '../utils/authenticationStore';
 
@@ -35,6 +37,11 @@ class LoginContainer extends Component<LoginPropType, LoginStateType> {
         this.changeHandler = this.changeHandler.bind(this);
         this.clickHandler = this.clickHandler.bind(this);
     } // constructor
+
+    async componentDidMount() {
+        // Update navbar for address bar changes
+        urlBtnUpdates();
+    }
 
     changeHandler(event: ChangeEvent<HTMLInputElement>): void {
         // First disable default behavior
@@ -100,7 +107,7 @@ class LoginContainer extends Component<LoginPropType, LoginStateType> {
                          Get user role and set on App Router
                          ***********************************/
                         let role = await this.props.getRole();
-                        
+
 
                         // this.setState({toProducts: true});
                         // push props to the products route in App.js 

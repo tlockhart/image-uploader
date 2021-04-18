@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import './App.scss';
+import "./App.scss";
 // Handle Routes
 // import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
@@ -38,11 +38,14 @@ class App extends Component {
       loading: false,
       redirect: false,
       loggedOut: false,
-      credentialsValid: false
+      credentialsValid: false,
+      refresh_token: "",
+      authToken: "",
     };
 
     this.handlePageClick = this.handlePageClick.bind(this);
     this.redirectHome = this.redirectHome.bind(this);
+    this.redirectLogin = this.redirectLogin.bind(this);
     this.getRole = this.getRole.bind(this);
     this.setRole = this.setRole.bind(this);
     this.areCredentialsValid = this.areCredentialsValid.bind(this);
@@ -63,7 +66,7 @@ class App extends Component {
   async areCredentialsValid() {
     const hasAccessTokenExpired = await authenticationStore.hasAccessTokenExpired();
     const credentialsValid = !hasAccessTokenExpired;
-    this.setState({credentialsValid: credentialsValid});
+    this.setState({ credentialsValid: credentialsValid });
     return credentialsValid;
   }
 
@@ -71,6 +74,12 @@ class App extends Component {
   async getRole() {
     const localStateObj = await auth.getLocalStorage();
     console.log("APPJS. LOCALSTATEOBJ:", localStateObj);
+
+    let authToken = "Bearer " + localStateObj.access_token;
+    console.log(`APP.js authToken: ${authToken}`);
+    let refresh_token = localStateObj.refresh_token;
+    console.log(`APP.js refresh_Token: ${refresh_token}`);
+
     // this.setState(localStateObj);
     console.log("EMAIL:", localStateObj.email);
     const email = localStateObj.email;
@@ -78,19 +87,25 @@ class App extends Component {
 
     /* Set user role on state, by using call back
     function instead of async await */
-    this.setState({ loading: true });
-
-    const role = await auth.setUserRole(email).then((data) => {
-      console.log("setUserRole:", data.role);
-      this.setState({ role: data.role });
-      this.setState({ loading: false });
-      console.log("AFTER WILLMOUNT LOAD user:", this.state.role);
-      /**************************/
-      console.log("APPJS ROLE B4 Set:", this.state.role);
-      this.setState({ role: data.role });
-      console.log("APPJS STATE ROLE After Set:", this.state.role);
-      return data.role;
+    this.setState({ 
+      refresh_token,
+      authToken,
+      loading: true,
     });
+
+    const role = await auth
+      .setUserRole(email, this.state.authToken, this.state.refresh_token)
+      .then((data) => {
+        console.log("setUserRole:", data.role);
+        this.setState({ role: data.role });
+        this.setState({ loading: false });
+        console.log("AFTER WILLMOUNT LOAD user:", this.state.role);
+        /**************************/
+        console.log("APPJS ROLE B4 Set:", this.state.role);
+        this.setState({ role: data.role });
+        console.log("APPJS STATE ROLE After Set:", this.state.role);
+        return data.role;
+      });
     console.log("APP.JS ROLE:", role);
     this.setState({
       role: role,
@@ -111,6 +126,11 @@ class App extends Component {
     console.log("Called REDIRECT HOME redirect after", this.state.redirect);
     history.push({
       pathname: "/",
+    });
+  }
+  redirectLogin() {
+    history.push({
+      pathname: "/user/login",
     });
   }
 
@@ -158,22 +178,23 @@ class App extends Component {
           <Route
             exact
             path="/"
-            render={(props) => 
-            <HomeContainer 
-              {...props} 
-            />}
+            render={(props) => <HomeContainer {...props} />}
           />
           <Route
             exact
             path="/user/registration"
-            component={RegistrationContainer}
+            // component={RegistrationContainer}
+            render={(props) => <RegistrationContainer 
+              {...props}
+              redirectLogin={this.redirectLogin} />}
           />
           <Route
             exact
             path="/user/login"
             render={(props) => (
-              <LoginContainer {...props} 
-                getRole={this.getRole} 
+              <LoginContainer
+                {...props}
+                getRole={this.getRole}
                 role={this.state.role}
               />
             )}
@@ -181,25 +202,25 @@ class App extends Component {
           <Route
             exact
             path="/products/product/update/:product_id"
-            render={(props)=>(
-              <ProductUpdateContainer 
-              {...props}
-              role={this.state.role}
-              loggedOut={this.state.loggedOut}
-              setRole={this.setRole}
-            />
-          )}
+            render={(props) => (
+              <ProductUpdateContainer
+                {...props}
+                role={this.state.role}
+                loggedOut={this.state.loggedOut}
+                setRole={this.setRole}
+              />
+            )}
           />
           <Route
             exact
             path="/product/insert"
-            render={(props)=>(
-              <ProductInsertContainer 
-              {...props}
-              role={this.state.role}
-              loggedOut={this.state.loggedOut}
-              setRole={this.setRole}
-            />
+            render={(props) => (
+              <ProductInsertContainer
+                {...props}
+                role={this.state.role}
+                loggedOut={this.state.loggedOut}
+                setRole={this.setRole}
+              />
             )}
           />
           <Route
@@ -207,12 +228,12 @@ class App extends Component {
             path="/products/product/:product_id"
             render={(props) => (
               <ProductViewContainer
-              {...props}
-              role={this.state.role}
-              loggedOut={this.state.loggedOut}
-              areCredentialsValid={this.areCredentialsValid}
-              credentialsActive={this.state.credentialsActive}
-              setRole={this.setRole}
+                {...props}
+                role={this.state.role}
+                loggedOut={this.state.loggedOut}
+                areCredentialsValid={this.areCredentialsValid}
+                credentialsActive={this.state.credentialsActive}
+                setRole={this.setRole}
               />
             )}
           />
