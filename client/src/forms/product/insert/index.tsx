@@ -18,9 +18,9 @@ let ProductInsertForm: FC<ProductInsertFormPropType> = (props: ProductInsertForm
                             <br />
                             <div className="product-name-value-form-group">
                                 <Text
-                                    htmlFor="formGroupProductName"
+                                    htmlFor="insertFormGroupProductName"
                                     className="form-control product-name"
-                                    id={"formGroupProductName"}
+                                    id={"insertFormGroupProductName"}
                                     placeholder={props.placeholderName }
                                     name={"productName"}
                                     label={"Name"}
@@ -28,9 +28,9 @@ let ProductInsertForm: FC<ProductInsertFormPropType> = (props: ProductInsertForm
                                     changeHandler={props.changeHandler}
                                 />
                                 <Text
-                                    htmlFor={"formGroupProductValue"}
+                                    htmlFor={"insertFormGroupProductValue"}
                                     className={"form-control product-value"}
-                                    id={"formGroupProductValue"}
+                                    id={"insertFormGroupProductValue"}
                                     placeholder={props.placeholderValue}
                                     name={"productValue"}
                                     label={"Value"}

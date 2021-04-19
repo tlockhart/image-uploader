@@ -2,16 +2,15 @@ import { ChangeEvent, Component } from "react";
 import Can from "components/can";
 
 // Import module to get/set variables from/in the LocalStorage
-import * as auth from '../utils/authenticationStore';
+import * as auth from '../utils/authentication-store';
 
 // Import Components
 import UpdateForm from "../forms/product/update";
-import credentialStore from '../utils/credentialStore';
-import { updateProduct, performDBAction } from '../utils/productStore';
+import credentialStore from '../utils/credential-store';
+import { updateProduct, performDBAction } from '../utils/product-store';
 import { Moment } from "moment";
-import { urlBtnUpdates } from "utils/urlBtnUpdates";
-import { getProductDetails } from '../utils/productStore';
-import ProductsListContainer from "./ProductsListContainer";
+import { urlBtnUpdates } from "utils/url-btn-updates";
+import { getProductDetails } from '../utils/product-store';
 
 class ProductUpdateContainer extends Component<ProductUpdatePropType> {
     refreshURL: string;

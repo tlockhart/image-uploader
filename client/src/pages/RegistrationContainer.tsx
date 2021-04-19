@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { ChangeEvent } from "react";
 
-import {formCorrection, checkFormErrors} from "js/form-correction";
+import {correctInput, displayInputErrors, removeInputErrors} from "utils/input-validation";
 
-import { urlBtnUpdates } from "utils/urlBtnUpdates";
+import { urlBtnUpdates } from "utils/url-btn-updates";
 
 // import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBMask, MDBView } from "mdbreact";
 
@@ -49,10 +49,10 @@ class RegistrationContainer extends Component<RegContainerPropType> {
 
         // Set a listener on the textField to correct invalid ids
         if (targetId === "regFormGroupEmail") {
-            formCorrection("regFormGroupEmail");
+            correctInput("regFormGroupEmail");
         }
         if (target.style.borderColor === "red" && target.value){
-            target.style.borderColor = "";
+            removeInputErrors(target);
         }
         const {
             name,
@@ -78,7 +78,7 @@ class RegistrationContainer extends Component<RegContainerPropType> {
 
         // Correct email format prior to submission
         if (!this.state.email || !this.state.password) {
-            checkFormErrors("regFormGroupEmail", "regFormGroupPassword")
+            displayInputErrors("regFormGroupEmail", "regFormGroupPassword");
         } else {
             // Package Data to be sent in the Post Request Body
         let regData = {

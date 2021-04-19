@@ -1,15 +1,15 @@
 import { AxiosResponse } from "axios";
 import React, { Component } from "react";
-import { urlBtnUpdates } from "utils/urlBtnUpdates";
+import { urlBtnUpdates } from "utils/url-btn-updates";
 import Can from "components/can";
 
 // import "../style.css";
 import UpdateBtn from "components/buttons/update-btn";
 import DeleteBtn from "components/buttons/delete-btn";
-import * as auth from '../utils/authenticationStore';
+import * as auth from '../utils/authentication-store';
 
-import { deleteProduct, getProductDetails, stageDBAction } from '../utils/productStore';
-import credentialStore from "utils/credentialStore";
+import { deleteProduct, getProductDetails, stageDBAction } from '../utils/product-store';
+import credentialStore from "utils/credential-store";
 
 class ProductViewContainer extends Component<ProductViewPropType> {
     // props!: ProductViewPropType;

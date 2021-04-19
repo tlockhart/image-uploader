@@ -1,14 +1,15 @@
 import React, { Component, FormEvent } from "react";
 // Import module to get/set variables from/in the LocalStorage
-import * as auth from '../../utils/authenticationStore';
+import * as auth from '../../utils/authentication-store';
 import Can from "components/can";
+import { displayInputErrors, removeImgErrorDisplay, removeInputErrors } from "utils/input-validation";
 
 // Import Components
 import ProductInsertForm from "../../forms/product/insert";
-import credentialStore from '../../utils/credentialStore';
-import { insertProduct, stageDBAction } from '../../utils/productStore';
+import credentialStore from '../../utils/credential-store';
+import { insertProduct, stageDBAction } from '../../utils/product-store';
 import * as imgHelper from './utils/helpers';
-import { insertCloudinary } from '../../utils/productStore';
+import { insertCloudinary } from '../../utils/product-store';
 import { ChangeEvent } from "react";
 import { Moment } from "moment";
 import './styles.css';
@@ -150,6 +151,9 @@ class ProductInsertContainer extends Component<ProductInsertContainerPropType, P
 
                 //12/12/09: set new image prop values
                 this.setState({ image });
+
+                // Remove error class from image-input, if file selected
+                removeImgErrorDisplay('image-input', 'image-input-error');
             }
             catch (err) {
                 console.log("failure ", err);
@@ -281,7 +285,7 @@ class ProductInsertContainer extends Component<ProductInsertContainerPropType, P
 
                 console.log("CurrentCredentials:", currentCredentials);
 
-                const authToken = 'Bearer '+currentCredentials.access_token;
+                const authToken = 'Bearer ' + currentCredentials.access_token;
 
                 console.log("ProdInsertCont-AuthToken:", authToken);
                 const refreshToken = currentCredentials.refresh_token;
@@ -397,7 +401,11 @@ class ProductInsertContainer extends Component<ProductInsertContainerPropType, P
                     [name]: value,
                 }
             );
+            if (event.target.style.borderColor === "red") {
+                removeInputErrors(event.target);
+            }
         }
+
     } // changeHandler
 
     async insertClickHandler(event: FormEvent<HTMLFormElement>) {
@@ -407,14 +415,15 @@ class ProductInsertContainer extends Component<ProductInsertContainerPropType, P
 
             let name = this.state.productName;
             let value = this.state.productValue;
+            let image = this.state.image.input;
 
             /************************************************************************
              * Reset state variables representing view input after submit
              * **********************************************************************/
-            this.setState({ productName: '' });
-            this.setState({ productValue: '' });
-            this.setState({ placeholderName: '' });
-            this.setState({ placeholderValue: '' });
+            // this.setState({ productName: '' });
+            // this.setState({ productValue: '' });
+            // this.setState({ placeholderName: '' });
+            // this.setState({ placeholderValue: '' });
 
             /************************************
              * STEP1 of 8: Get Data out of local Storage
@@ -514,32 +523,39 @@ class ProductInsertContainer extends Component<ProductInsertContainerPropType, P
                 await this.submitImageHandler(event, this.state.image);
                 // console.log("base64 still here:", this.state.image.base64Str);
                 console.log("In stage");
-                /***********************************************
-                 * Step8 of 8: PERFORM A DB ACTION IF TOKENS R VALID 
-                 **********************************************/
-                const dbActionResults = await stageDBAction(
-                    this.state.productId,
-                    this.state.email,
-                    name,
-                    value,
-                    this.state.image,
-                    this.baseURL,
-                    this.state.refresh_token,
-                    this.state.authToken,
-                    this.state.hasAccessTokenExpired,
-                    insertProduct);
-                console.log("Out stage");
-                console.log("ProductInsertContainer:", dbActionResults);
-                /***************************************************
-                 * Set State with the results of calling the DB Action
-                 ***************************************************/
-                this.setState(dbActionResults);
+
+                // Check if a product name, value, and image has been selected, before input submission:
+                if (!name || !value || !image) {
+                    displayInputErrors("insertFormGroupProductName", "insertFormGroupProductValue",
+                    "image-input");
+                } else {
+                    /***********************************************
+                                     * Step8 of 8: PERFORM A DB ACTION IF TOKENS R VALID 
+                                     **********************************************/
+                    const dbActionResults = await stageDBAction(
+                        this.state.productId,
+                        this.state.email,
+                        name,
+                        value,
+                        this.state.image,
+                        this.baseURL,
+                        this.state.refresh_token,
+                        this.state.authToken,
+                        this.state.hasAccessTokenExpired,
+                        insertProduct);
+                    console.log("Out stage");
+                    console.log("ProductInsertContainer:", dbActionResults);
+                    /***************************************************
+                     * Set State with the results of calling the DB Action
+                     ***************************************************/
+                    this.setState(dbActionResults);
+                }
             } // if
 
         } // try
         catch (err) {
             console.log(err);
-            const displayMessage = err.message === 'Request failed with status code 401'? 'Please Login': '';
+            const displayMessage = err.message === 'Request failed with status code 401' ? 'Please Login' : '';
             this.setState({
                 message: displayMessage
             });

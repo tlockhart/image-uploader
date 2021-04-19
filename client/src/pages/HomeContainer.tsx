@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { urlParser } from "../utils/urlParser";
+import { urlParser } from "../utils/url-parser";
 
 // Import Components
 import Home from "../components/home";
-import { urlBtnUpdates } from "utils/urlBtnUpdates";
+import { urlBtnUpdates } from "utils/url-btn-updates";
 
 
 class HomeContainer extends Component<HomePropType, HomeStateType> {

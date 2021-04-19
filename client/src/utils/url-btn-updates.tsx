@@ -1,4 +1,4 @@
-import { urlParser } from "./urlParser";
+import { urlParser } from "./url-parser";
 
 export let urlBtnUpdates = () => {
         const pageName = urlParser();

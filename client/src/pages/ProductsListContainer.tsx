@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { urlBtnUpdates } from "utils/urlBtnUpdates";
+import { urlBtnUpdates } from "utils/url-btn-updates";
 // Import Components
 import ProductsListItem from "../components/products/list/index";
 import UploadSpinner from '../components/upload-spinner';
 // Import Server-Side Utilities:
 import API from '../utils/API';
 //import utils
-import * as auth from '../utils/authenticationStore';
+import * as auth from '../utils/authentication-store';
 
 class ProductsListContainer extends Component<ProductsPropType>{
 

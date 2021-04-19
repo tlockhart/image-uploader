@@ -1,7 +1,7 @@
 import { string } from "prop-types";
 
 import React, { ChangeEvent, JSXElement } from "react";
-import { urlBtnUpdates } from "utils/urlBtnUpdates";
+import { urlBtnUpdates } from "utils/url-btn-updates";
 
 declare global {
   /**************************

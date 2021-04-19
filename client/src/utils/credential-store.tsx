@@ -1,6 +1,6 @@
-import tokenStore from './tokenStore';
+import tokenStore from './token-store';
 // import * as authenticationStore from "./authenticationStore";
-import * as auth from '../utils/authenticationStore';
+import * as auth from './authentication-store';
 
 export default {
     // Pulls credentials from backend and stores in localstorage

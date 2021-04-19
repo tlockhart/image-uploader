@@ -1,5 +1,5 @@
 // Import Server-Side Utilities:
-import API from '../utils/API';
+import API from './API';
 
 export default {
     refresh: async (url:string, accessToken: string, refreshToken: string, email: string, expired:boolean) => {

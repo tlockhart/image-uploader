@@ -23,9 +23,9 @@ import ProductsListContainer from "./pages/ProductsListContainer";
 import ProductUpdateContainer from "./pages/ProductUpdateContainer";
 import ProductViewContainer from "./pages/ProductViewContainer";
 import RegistrationContainer from "./pages/RegistrationContainer";
-import * as auth from "./utils/authenticationStore";
+import * as auth from "./utils/authentication-store";
 import UploadSpinner from "./components/upload-spinner";
-import * as authenticationStore from "./utils/authenticationStore";
+import * as authenticationStore from "./utils/authentication-store";
 
 class App extends Component {
   constructor() {

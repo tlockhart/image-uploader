@@ -1,9 +1,9 @@
 import React, { Component, ChangeEvent, FormEvent } from "react";
 
-import { urlBtnUpdates } from "utils/urlBtnUpdates";
+import { urlBtnUpdates } from "utils/url-btn-updates";
 
 // Import module to get/set variables from/in the LocalStorage
-import * as authenticationStore from '../utils/authenticationStore';
+import * as authenticationStore from '../utils/authentication-store';
 
 // Import Server-Side Utilities:
 import API from '../utils/API';

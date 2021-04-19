@@ -1,3 +1,6 @@
 #formGroupProductName {
     /* margin-left: 30px; */
 }
+.image-input-error {
+    border: solid 1px red!important;
+}

@@ -11,11 +11,11 @@ import {
   MDBDropdownMenu,
   MDBIcon,
 } from "mdbreact";
-import * as auth from "../../utils/authenticationStore";
+import * as auth from "../../utils/authentication-store";
 import Can from "../can";
 import { navbarOptions } from "./btn-data/index";
 import "./btn-data/style.css";
-import { urlParser } from "../../utils/urlParser";
+import { urlParser } from "../../utils/url-parser";
 import { string } from "prop-types";
 import { RefObject } from "react";
 import { createRef } from "react";
