@@ -1,0 +1,1 @@
+'---Syllables are constructed from reoccuring letter patterns (CV, CVC) in the english language.  They can be broken down into a pair of letters that make one sound, called a diagraph, or a pair or group of letters that work together using each of their individual sounds, called a blend.---',
