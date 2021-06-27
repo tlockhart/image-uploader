@@ -5,10 +5,8 @@ import {correctInput, displayInputErrors, removeInputErrors} from "utils/input-v
 
 import { urlBtnUpdates } from "utils/url-btn-updates";
 
-// import { MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBMask, MDBView } from "mdbreact";
-
 // Import Server-Side Utilities:
-import API from '../utils/API';
+import {api as API} from '../utils/API';
 
 // Import Components
 import RegistrationForm from "../forms/registration";

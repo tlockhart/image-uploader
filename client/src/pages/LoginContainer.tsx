@@ -6,15 +6,10 @@ import { urlBtnUpdates } from "utils/url-btn-updates";
 import * as authenticationStore from '../utils/authentication-store';
 
 // Import Server-Side Utilities:
-import API from '../utils/API';
+import {api as API} from '../utils/API';
 
 // Import Components
 import LoginForm from "../forms/login";
-
-interface PropTypes {
-    getRole: () => void,
-    history: any
-}
 
 class LoginContainer extends Component<LoginPropType, LoginStateType> {
     state!: LoginStateType;
@@ -102,12 +97,6 @@ class LoginContainer extends Component<LoginPropType, LoginStateType> {
                             expiration,
                             email,
                             message);
-
-                        /***********************************
-                         Get user role and set on App Router
-                         ***********************************/
-                        let role = await this.props.getRole();
-
 
                         // this.setState({toProducts: true});
                         // push props to the products route in App.js 
